@@ -18,7 +18,13 @@
       "left": -139.43,
       "attrs": {}
     },
-    { "type": "wokwi-hc-sr04", "id": "ultrasonic1", "top": -123.3, "left": 82.3, "attrs": {} },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic1",
+      "top": -123.3,
+      "left": 82.3,
+      "attrs": { "distance": "299" }
+    },
     {
       "type": "wokwi-resistor",
       "id": "r1",
@@ -47,18 +53,18 @@
     [ "esp:RX", "$serialMonitor:TX", "", [] ],
     [ "esp:5V", "bb1:tp.5", "red", [ "h0" ] ],
     [ "esp:GND.1", "bb1:tn.5", "black", [ "h0" ] ],
-    [ "esp:3V3.1", "bb1:bp.1", "green", [ "v0", "h-259.25" ] ],
+    [ "esp:3V3.1", "bb1:bp.1", "orange", [ "v0", "h-259.25" ] ],
     [ "ultrasonic1:VCC", "bb1:tp.1", "red", [ "v48", "h-153.6", "v-192", "h-182.4" ] ],
     [ "ultrasonic1:GND", "bb1:tn.4", "black", [ "v48", "h94.8", "v-220.8", "h-489.6" ] ],
     [
       "ultrasonic1:TRIG",
       "esp:5",
-      "green",
+      "yellow",
       [ "v57.6", "h-173.2", "v-182.4", "h-153.6", "v86.4" ]
     ],
     [ "ultrasonic1:ECHO", "r5:2", "green", [ "v0" ] ],
     [ "r5:1", "esp:18", "green", [ "v0", "h-105.6", "v-182.4", "h-134.4", "v134.4" ] ],
-    [ "tds_sensor:VCC", "bb1:bp.25", "red", [ "h-96", "v115.2", "h-364.8" ] ],
+    [ "tds_sensor:VCC", "bb1:bp.25", "orange", [ "h-96", "v115.2", "h-364.8" ] ],
     [ "tds_sensor:GND", "bb1:tn.11", "black", [ "v-86.4", "h-579.2" ] ],
     [ "esp:4", "tds_sensor:SIG", "green", [ "h-9.65", "v-57.6", "h115.2", "v384", "h124.8" ] ],
     [ "esp:18", "r1:1", "green", [ "h0" ] ],
