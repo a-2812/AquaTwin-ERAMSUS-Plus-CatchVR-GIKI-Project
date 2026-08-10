@@ -4,14 +4,6 @@
   "editor": "wokwi",
   "parts": [
     {
-      "type": "wokwi-breadboard-mini",
-      "id": "bb2",
-      "top": 106.5,
-      "left": -361.3,
-      "rotate": 90,
-      "attrs": { "color": "#deb953" }
-    },
-    {
       "type": "board-esp32-s3-devkitc-1",
       "id": "esp",
       "top": -134.58,
@@ -23,22 +15,7 @@
       "id": "ultrasonic1",
       "top": -123.3,
       "left": 82.3,
-      "attrs": { "distance": "2" }
-    },
-    {
-      "type": "wokwi-resistor",
-      "id": "r1",
-      "top": 24,
-      "left": -182.95,
-      "rotate": 90,
-      "attrs": { "value": "2000" }
-    },
-    {
-      "type": "wokwi-resistor",
-      "id": "r5",
-      "top": 32.75,
-      "left": 86.4,
-      "attrs": { "value": "1000" }
+      "attrs": { "distance": "370" }
     },
     {
       "type": "wokwi-slide-potentiometer",
@@ -52,21 +29,17 @@
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
     [ "esp:RX", "$serialMonitor:TX", "", [] ],
     [
-      "ultrasonic1:TRIG",
-      "esp:5",
-      "yellow",
-      [ "v57.6", "h-173.2", "v-182.4", "h-153.6", "v86.4" ]
+      "ultrasonic1:VCC",
+      "esp:3V3.2",
+      "red",
+      [ "v67.2", "h-134.4", "v-201.6", "h-201.6", "v67.2" ]
     ],
-    [ "ultrasonic1:ECHO", "r5:2", "green", [ "v0" ] ],
-    [ "r5:1", "esp:18", "green", [ "v0", "h-105.6", "v-182.4", "h-134.4", "v134.4" ] ],
-    [ "esp:4", "tds_sensor:SIG", "green", [ "h-9.65", "v-57.6", "h115.2", "v384", "h124.8" ] ],
-    [ "esp:18", "r1:1", "green", [ "h0" ] ],
-    [ "esp:GND.1", "r1:2", "black", [ "h0" ] ],
-    [ "esp:GND.1", "bb2:4t.a", "black", [ "h-19.25", "v28.8" ] ],
-    [ "bb2:4t.b", "tds_sensor:GND", "black", [ "v86.4", "h624", "v19.2" ] ],
-    [ "ultrasonic1:GND", "bb2:4t.c", "black", [ "v67.2", "h75.6", "v-211.2", "h-499.2" ] ],
-    [ "ultrasonic1:VCC", "esp:5V", "red", [ "v48", "h-153.6", "v-182.4", "h-172.8", "v249.6" ] ],
-    [ "tds_sensor:VCC", "esp:3V3.1", "orange", [ "h-278.4", "v-336" ] ]
+    [ "esp:4", "ultrasonic1:TRIG", "green", [ "h-19.25", "v-76.8", "h163.2", "v201.6", "h154" ] ],
+    [ "esp:2", "ultrasonic1:ECHO", "yellow", [ "h48", "v124.8", "h172.8" ] ],
+    [ "esp:GND.1", "tds_sensor:GND", "black", [ "h-19.25", "v86.4", "h566.4", "v48" ] ],
+    [ "ultrasonic1:GND", "esp:GND.1", "black", [ "v96", "h-183.6", "v105.6", "h-144", "v-76.8" ] ],
+    [ "esp:3V3.2", "tds_sensor:VCC", "red", [ "h-48.05", "v326.4" ] ],
+    [ "esp:1", "tds_sensor:SIG", "blue", [ "h38.4", "v336" ] ]
   ],
   "dependencies": {}
 }
