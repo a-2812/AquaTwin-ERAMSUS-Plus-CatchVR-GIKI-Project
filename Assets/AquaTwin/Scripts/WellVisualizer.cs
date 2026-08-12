@@ -178,10 +178,29 @@ namespace AquaTwin
         public void SetRecordedSensorData(float depthFromTopCm,
             float depletionRateCmPerSecond, float tdsPpm, float ph)
         {
+            ApplyDistanceSensorData(depthFromTopCm, depletionRateCmPerSecond,
+                tdsPpm, ph, recordedWellDepthCm);
+        }
+
+        /// <summary>
+        /// Receives the physical ultrasonic distance. Conversion to water fill is
+        /// deliberately owned by the Digital Twin rather than the transport client.
+        /// </summary>
+        public void SetLiveSensorData(float distanceFromTopCm, float tdsPpm, float ph)
+        {
+            ApplyDistanceSensorData(distanceFromTopCm, 0f, tdsPpm, ph,
+                recordedWellDepthCm);
+        }
+
+        private void ApplyDistanceSensorData(float depthFromTopCm,
+            float depletionRateCmPerSecond, float tdsPpm, float ph,
+            float calibratedFullDepthCm)
+        {
             hasRecordedDepth = true;
             recordedDepthFromTopCm = depthFromTopCm;
             recordedDepletionRateCmPerSecond = depletionRateCmPerSecond;
-            WaterDepthPercent = (1f - depthFromTopCm / recordedWellDepthCm) * 100f;
+            WaterDepthPercent = (1f - depthFromTopCm /
+                Mathf.Max(0.1f, calibratedFullDepthCm)) * 100f;
             TdsLevel = tdsPpm;
             PhLevel = ph;
         }

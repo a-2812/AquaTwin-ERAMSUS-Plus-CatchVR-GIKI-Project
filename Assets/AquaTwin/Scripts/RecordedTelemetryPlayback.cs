@@ -102,6 +102,13 @@ namespace AquaTwin
 
         private void Start()
         {
+            if (HiveMqttWellDataSource.LiveModeRequested)
+            {
+                isPlaying = false;
+                enabled = false;
+                return;
+            }
+
             if (wellVisualizer == null)
                 wellVisualizer = GetComponent<WellVisualizer>();
             if (playOnStart)
