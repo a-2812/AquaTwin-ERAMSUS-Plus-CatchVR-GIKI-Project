@@ -8,6 +8,34 @@ This project aligns with UN SDG 6 (Clean Water and Sanitation)—focusing on Tar
 
 ---
 
+## Repository Structure
+
+```
+├── firmware/                # ESP32-S3 Arduino sketches
+│   ├── sketch.ino           # Production firmware (MQTT + Wi-Fi)
+│   ├── sketch_serial_only.ino  # Serial-only version (bench testing)
+│   ├── hc-sr04_test_code.ino   # Ultrasonic sensor standalone test
+│   ├── tds_test_code.ino       # TDS sensor standalone test
+│   ├── libraries.txt           # Wokwi library dependencies
+│   └── README.md
+├── circuit/                 # Hardware simulation
+│   ├── diagram.json         # Wokwi breadboard wiring
+│   └── README.md
+├── cloud/                   # MQTT broker setup
+│   └── README.md
+├── unity/                   # Unity digital twin project
+│   ├── Assets/              # Scripts, materials, prefabs, scenes
+│   ├── Packages/
+│   ├── ProjectSettings/
+│   └── README.md
+├── data/                    # Recorded sensor data
+│   ├── demo_40_second_reading.jsonl
+│   └── README.md
+└── README.md                # ← You are here
+```
+
+---
+
 ## What it actually does
 
 Most groundwater monitoring in our context still happens through periodic manual surveys — someone walks out, drops a tape or a rope down a well, writes a number in a register. By the time that number reaches a decision-maker, the situation on the ground has already moved on.
@@ -17,11 +45,23 @@ AquaTwin replaces that with a small ESP32-based node sitting at the well head th
 1. Measures the distance to the water surface with an ultrasonic sensor (→ water depth)
 2. Tracks how fast that depth is changing over time (→ depletion rate)
 3. Reads a TDS probe to get a sense of dissolved solids in the water (→ salinity / quality proxy)
-4. Packages all of it into a small JSON payload and streams it out once a second
+4. Packages all of it into a JSON payload and publishes it over MQTT to HiveMQ Cloud
 
 That payload then drives a 3D digital twin of the well built in Unity — the water plane in the scene actually drops as the physical water level drops, and the tint of the water shifts as the readings change.
 
-This repo covers the **hardware + firmware layer**. Backend routing and the Unity twin live in their own parts of the project (see in the realted branches )
+---
+
+## Data Flow
+
+```text
+ESP32-S3 sensors
+        ↓
+HiveMQ Cloud (MQTT TLS, port 8883)
+        ↓
+Unity Digital Twin (subscribes via WSS, port 8884)
+        ↓
+3D visualization: water level, TDS colour, pH, dashboard
+```
 
 ---
 
@@ -34,16 +74,15 @@ Everything was picked to keep the prototype well under **4,000 PKR**, sourced lo
 | ESP32-S3 DevKitC-1 (N16R8, dual Type-C) | 1 |
 | HC-SR04 Ultrasonic Distance Sensor | 1 |
 | TDS Meter V1.0 Module (waterproof probe) | 1 |
-| Full-size 830-tie breadboard | 1 | 250 |
-| Jumper wires (M-M + M-F, 20cm) | approx: 40|
-
+| Full-size 830-tie breadboard | 1 |
+| Jumper wires (M-M + M-F, 20cm) | approx. 40 |
 
 ## Wiring & Pinout
 
 | Module | Pin | ESP32-S3 Pin | Notes |
 |---|---|---|---|
-| HC-SR04 | TRIG | GPIO 4 | Output: out from controller in to the sensor |
-| HC-SR04 | ECHO | GPIO 2 | Input: into controller from the sensor |
+| HC-SR04 | TRIG | GPIO 4 | Output: controller → sensor |
+| HC-SR04 | ECHO | GPIO 2 | Input: sensor → controller |
 | HC-SR04 | VCC | 3V3 | |
 | HC-SR04 | GND | GND | |
 | TDS Probe | SIG | GPIO 1 | Analog in, ADC1_CH0 |
@@ -52,73 +91,48 @@ Everything was picked to keep the prototype well under **4,000 PKR**, sourced lo
 
 ---
 
-## Firmware
+## Quick Start
 
-Three sketches are included, in the order they were actually used while building this:
+### 1. Firmware
 
-| File | Purpose | Location |
-|---|---| -- |
-| `hc-sr04_test_code.ino` | Standalone test — just the ultrasonic sensor, prints distance in cm/inches to Serial. Used to confirm wiring before touching anything else. | inside branch `faisaliqbalkhattak/circuit-diagram-embedded-systems-base`
-| `tds_test_code.ino` | Standalone test — raw ADC + voltage readout from the TDS probe on GPIO 1. | inside branch `faisaliqbalkhattak/circuit-diagram-embedded-systems-base`
-| `sketch_full_code.ino` | Full working code for the whole setup | inside branch `feature/arduino-telemetry-code` |
+See [`firmware/README.md`](firmware/README.md).
 
+1. Install the **ESP32 board package** in Arduino IDE (Boards Manager → search `esp32`).
+2. Board settings: **ESP32S3 Dev Module**, USB CDC on boot enabled.
+3. Open [`firmware/sketch.ino`](firmware/sketch.ino), set your Wi-Fi and MQTT credentials, upload.
+4. Serial Monitor at **115200 baud** — sensor data and MQTT status.
 
-### What the main sketch does
+### 2. Cloud Broker
 
-- Triggers the HC-SR04 and times the echo pulse to get `depth_cm` (`duration × 0.0343 / 2`)
-- Keeps the previous reading + timestamp to compute `depletion_rate_cm_s = (current_depth − previous_depth) / Δt`
-- Reads the TDS probe's raw ADC value, converts it to voltage against the ESP32-S3's 3.3V / 12-bit ADC, and applies a calibration factor (`606.06`) to get `tds_ppm`
-- A `ph` value is included in the payload too — worth being upfront about this one: we didn't have a pH probe in the BOM, so for the prototype it's generated by a simple ramp function (cycles between 6.0–8.5) just to give the downstream Unity twin something to bind to and demo the shading/alert logic. Swapping in a real pH sensor is a drop-in replacement — it just needs its own `read...()` function feeding the same variable.
-- Streams the whole thing over Serial at 115200 baud, once per second:
+See [`cloud/README.md`](cloud/README.md) for HiveMQ Cloud setup, broker config, and troubleshooting.
 
-```json
-{"depth_cm":184.32,"depletion_rate_cm_s":0.0120,"tds_ppm":410.5,"ph":7.15}
-```
+### 3. Unity Digital Twin
 
-### Data contract
+See [`unity/README.md`](unity/README.md).
 
-This is the one thing every layer of the project (hardware → backend → Unity) agrees not to touch without a team-wide conversation, since everything downstream binds directly to these key names:
-
-```
-depth_cm             — distance from sensor to water surface, cm
-depletion_rate_cm_s  — rate of change of depth, cm/s (positive = water dropping)
-tds_ppm              — total dissolved solids, parts per million
-ph                   — pH estimate (see note above)
-```
+1. Open the `unity/` folder as a project in Unity Hub (Unity 6000.3.2f1+).
+2. Select **AquaTwin → MQTT Connection Setup** → set to `LiveMqtt` → enter credentials → Save.
+3. Enter Play Mode — the 3D well responds to live sensor data.
 
 ---
 
-## Flashing it yourself
+## Data Contract
 
-1. Install the **ESP32 board package** in Arduino IDE (Boards Manager → search `esp32`, install the Espressif package).
-2. Board settings: **ESP32S3 Dev Module**, USB CDC on boot enabled if you're using the native USB port for Serial.
-3. Open `sketch_full_code.ino`, select the correct COM port, and upload.
-4. Open Serial Monitor at **115200 baud** — you should start seeing the JSON payload every second.
+Every layer (firmware → broker → Unity) agrees on these keys:
 
+| Key | Unit | Description |
+|---|---|---|
+| `device` | — | Device identifier (e.g. `well01`) |
+| `distance_cm` | cm | Distance from sensor to water surface |
+| `tds_ppm` | ppm | Total dissolved solids |
+| `ph` | — | pH estimate |
 
-
----
-
-## Related components
-
-AquaTwin is built as one pipeline split across a few tightly-scoped pieces of work, not five separate projects:
-
-- **Hardware + firmware** (this repo) — sensors → ESP32-S3 → JSON over Wi-Fi/Serial
-- **Backend orchestration** — validates and routes the JSON payload, exposes it to the visualization layer
-- **Unity Digital Twin** — binds the incoming data keys to a live 3D aquifer cross-section
-- **Pitch & SDG alignment** — the civic/policy case for municipal water authorities
-
-The circuit and firmware in this repo only touch the first layer — the JSON schema above is the contract point with everything else.
+Changing these keys requires updating firmware, Unity, and any backend in between.
 
 ---
 
 ## Team
 
-Built by the AquaTwin team as part of CATCH_VR Summer School 2026 (GIK Institute, Erasmus+ CBHE project):
+Built by the AquaTwin team as part of CATCH_VR Summer School 2026 (GIK Institute, Erasmus+ CBHE project).
 
-- **Faisal Iqbal** Idea refinement, scope definition, circuit diagram design, and sensor finalization 
-- **Ahmad Raza** — Controller and sensors coding
-- **Abdullah** — System architecture & backend orchestration
-- **Rahat** — Unity digital twin
-- **Kashaf** — Pitch deck, SDG alignment and documentation
-- **Salar Ahmad** — demo video, backend connection to unity twin
+Contributors and their roles are preserved in the [commit history](../../commits/main).

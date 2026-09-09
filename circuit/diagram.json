@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-s3-devkitc-1",
+      "id": "esp",
+      "top": -134.58,
+      "left": -139.43,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic1",
+      "top": -123.3,
+      "left": 82.3,
+      "attrs": { "distance": "370" }
+    },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "tds_sensor",
+      "top": 187.4,
+      "left": 95,
+      "attrs": { "travelLength": "50", "label": "TDS Sensor (PPM)" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [
+      "ultrasonic1:VCC",
+      "esp:3V3.2",
+      "red",
+      [ "v67.2", "h-134.4", "v-201.6", "h-201.6", "v67.2" ]
+    ],
+    [ "esp:4", "ultrasonic1:TRIG", "green", [ "h-19.25", "v-76.8", "h163.2", "v201.6", "h154" ] ],
+    [ "esp:2", "ultrasonic1:ECHO", "yellow", [ "h48", "v124.8", "h172.8" ] ],
+    [ "esp:GND.1", "tds_sensor:GND", "black", [ "h-19.25", "v86.4", "h566.4", "v48" ] ],
+    [ "ultrasonic1:GND", "esp:GND.1", "black", [ "v96", "h-183.6", "v105.6", "h-144", "v-76.8" ] ],
+    [ "esp:3V3.2", "tds_sensor:VCC", "red", [ "h-48.05", "v326.4" ] ],
+    [ "esp:1", "tds_sensor:SIG", "blue", [ "h38.4", "v336" ] ]
+  ],
+  "dependencies": {}
+}
