@@ -21,7 +21,7 @@
       "type": "wokwi-slide-potentiometer",
       "id": "tds_sensor",
       "top": 187.4,
-      "left": 95,
+      "left": -106.6,
       "attrs": { "travelLength": "50", "label": "TDS Sensor (PPM)" }
     }
   ],
@@ -34,12 +34,17 @@
       "red",
       [ "v67.2", "h-134.4", "v-201.6", "h-201.6", "v67.2" ]
     ],
-    [ "esp:4", "ultrasonic1:TRIG", "green", [ "h-19.25", "v-76.8", "h163.2", "v201.6", "h154" ] ],
-    [ "esp:2", "ultrasonic1:ECHO", "yellow", [ "h48", "v124.8", "h172.8" ] ],
-    [ "esp:GND.1", "tds_sensor:GND", "black", [ "h-19.25", "v86.4", "h566.4", "v48" ] ],
+    [ "esp:GND.1", "tds_sensor:GND", "black", [ "h-19.25", "v86.4", "h345.6", "v48" ] ],
     [ "ultrasonic1:GND", "esp:GND.1", "black", [ "v96", "h-183.6", "v105.6", "h-144", "v-76.8" ] ],
     [ "esp:3V3.2", "tds_sensor:VCC", "red", [ "h-48.05", "v326.4" ] ],
-    [ "esp:1", "tds_sensor:SIG", "blue", [ "h38.4", "v336" ] ]
+    [ "ultrasonic1:TRIG", "esp:5", "blue", [ "v76.8", "h-154", "v-201.6", "h-182.4", "v86.4" ] ],
+    [
+      "ultrasonic1:ECHO",
+      "esp:6",
+      "purple",
+      [ "v86.4", "h-173.6", "v-201.6", "h-163.2", "v86.4" ]
+    ],
+    [ "tds_sensor:SIG", "esp:3", "yellow", [ "h-115.2", "v-240.8" ] ]
   ],
   "dependencies": {}
 }
