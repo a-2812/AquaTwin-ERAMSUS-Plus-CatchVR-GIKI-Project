@@ -36,9 +36,9 @@ PubSubClient mqttClient(secureClient);
 // PIN DEFINITIONS
 // ============================================================
 
-#define TRIG_PIN 4
-#define ECHO_PIN 2
-#define TDS_PIN  1
+#define TRIG_PIN 5
+#define ECHO_PIN 6
+#define TDS_PIN  3
 
 // ============================================================
 // ADC CONSTRAINTS
