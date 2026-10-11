@@ -81,11 +81,11 @@ Everything was picked to keep the prototype well under **4,000 PKR**, sourced lo
 
 | Module | Pin | ESP32-S3 Pin | Notes |
 |---|---|---|---|
-| HC-SR04 | TRIG | GPIO 4 | Output: controller → sensor |
-| HC-SR04 | ECHO | GPIO 2 | Input: sensor → controller |
+| HC-SR04 | TRIG | GPIO 5 | Output: controller → sensor |
+| HC-SR04 | ECHO | GPIO 6 | Input: sensor → controller |
 | HC-SR04 | VCC | 3V3 | |
 | HC-SR04 | GND | GND | |
-| TDS Probe | SIG | GPIO 1 | Analog in, ADC1_CH0 |
+| TDS Probe | SIG | GPIO 3 | Analog in, ADC1_CH0 |
 | TDS Probe | VCC | 3V3 | |
 | TDS Probe | GND | GND | |
 

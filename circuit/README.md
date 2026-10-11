@@ -16,11 +16,11 @@ Open this file directly in the [Wokwi Simulator](https://wokwi.com/) to run the 
 
 | Module | Pin | ESP32-S3 Pin | Direction | Notes |
 |---|---|---|---|---|
-| HC-SR04 | TRIG | GPIO 4 | Output | Controller → Sensor |
-| HC-SR04 | ECHO | GPIO 2 | Input | Sensor → Controller |
+| HC-SR04 | TRIG | GPIO 5 | Output | Controller → Sensor |
+| HC-SR04 | ECHO | GPIO 6 | Input | Sensor → Controller |
 | HC-SR04 | VCC | 3V3 | Power | |
 | HC-SR04 | GND | GND | Ground | |
-| TDS Probe | SIG | GPIO 1 | Analog in | ADC1_CH0 |
+| TDS Probe | SIG | GPIO 3 | Analog in | ADC1_CH0 |
 | TDS Probe | VCC | 3V3 | Power | |
 | TDS Probe | GND | GND | Ground | |
 
